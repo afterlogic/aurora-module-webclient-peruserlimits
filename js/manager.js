@@ -16,8 +16,7 @@ module.exports = function (oAppData) {
 
     Settings.init(oAppData);
 
-    if (bNormalUser)
-    {
+    if (bNormalUser) {
         return {
             start: function (ModulesManager) {
                 App.subscribeEvent('Jua::Event:after', function (oParams) {
@@ -28,39 +27,32 @@ module.exports = function (oAppData) {
                         if (oResult.Module === 'Mail' && oResult.ErrorMessage === 'ErrorMaxMailAttachmentSize') {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE'));
                         }
+                        else if (oResult.Module === 'Files' && oResult.ErrorMessage === 'ErrorMaxFileSizeCloud') {
+                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILE_SIZE_CLOUD'));
+                        }
                     }
                 });
 
                 App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
-                    if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateContact')
-                    {
+                    if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateContact') {
 
-                        if(!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxContacts'){
+                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxContacts') {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_CONTACTS'));
                         }
                     }
-                    else if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateGroup')
-                    {
-                        if(!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxGroups'){
+                    else if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateGroup') {
+                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxGroups') {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_GROUPS'));
                         }
                     }
-                    else if (oParams.Request.Module === 'Calendar' && oParams.Request.Method === 'CreateCalendar')
-                    {
-                        if(!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxCalendars'){
+                    else if (oParams.Request.Module === 'Calendar' && oParams.Request.Method === 'CreateCalendar') {
+                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxCalendars') {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_CALENDARS'));
                         }
                     }
-                    else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'CreateFolder')
-                    {
-                        if(!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxFoldersCloud'){
+                    else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'CreateFolder') {
+                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxFoldersCloud') {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FOLDERS_CLOUD'));
-                        }
-                    }
-                    else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'UploadFile')
-                    {
-                        if(!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxFileSizeCloud'){
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILE_SIZE_CLOUD'));
                         }
                     }
                 });
