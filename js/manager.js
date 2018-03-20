@@ -73,6 +73,16 @@ module.exports = function (oAppData) {
                         }
                     }
                 });
+
+                App.subscribeEvent('AbstractFileModel::FileDownload::before', function (oParams) {
+                    var oFile = oParams.File;
+                    Settings.MaxDownloadsCloud += oFile.size();
+                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud) {
+                        Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_DOWNLOADS_CLOUD'));
+                        oParams.CancelDownload = true;
+                    }
+                });
+
             }
         };
     }
