@@ -19,16 +19,33 @@ module.exports = function (oAppData) {
     if (bNormalUser) {
         return {
             start: function (ModulesManager) {
+                App.subscribeEvent('Jua::Event:before', function (oParams) {
+                    if (oParams.Name === 'onSelect') {
+                        var aArguments = oParams.Arguments[1];
+                        var iSize = aArguments.Size;
+
+                        if (oParams.Module === 'Files' && oParams.Method === 'UploadFile') {
+                            if (iSize > Settings.MaxFileSizeCloud) {
+                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILE_SIZE_CLOUD', {'SIZE': Settings.MaxFileSizeCloud / (1024 * 1024)}));
+                                oParams.Cancel = true;
+                            }
+                        }
+                        else if (oParams.Module === 'Mail' && oParams.Method === 'UploadAttachment') {
+                            if (iSize > Settings.MaxMailAttachmentSize) {
+                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE', {'SIZE': Settings.MaxMailAttachmentSize / (1024 * 1024)}));
+                                oParams.Cancel = true;
+                            }
+                        }
+                    }
+                });
+
                 App.subscribeEvent('Jua::Event:after', function (oParams) {
                     if (oParams.Name === 'onComplete') {
-                        var sUid = oParams.Arguments[0];
-                        var bSuccess = oParams.Arguments[1];
                         var oResult = oParams.Arguments[2];
-                        if (oResult.Module === 'Mail' && oResult.ErrorMessage === 'ErrorMaxMailAttachmentSize') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE'));
-                        }
-                        else if (oResult.Module === 'Files' && oResult.ErrorMessage === 'ErrorMaxFileSizeCloud') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILE_SIZE_CLOUD'));
+                        if (oParams.Module === 'Files' && oParams.Method === 'UploadFile') {
+                            if (!oResult.Result && oResult.ErrorMessage === 'ErrorMaxFilesUploadCloud') {
+                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILES_UPLOAD_CLOUD'));
+                            }
                         }
                     }
                 });
