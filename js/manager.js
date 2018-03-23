@@ -72,7 +72,7 @@ module.exports = function (oAppData) {
                         }
                     }
                     else if (oParams.Request.Module === 'Mail' && oParams.Request.Method === 'SendMessage') {
-                        if (!oParams.Response.Result && oParams.Response.ErrorCode === 40009) {
+                        if (!oParams.Response.Result && oParams.Response.ErrorCode === 4009) {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_SENDING'));
                         }
                     }
