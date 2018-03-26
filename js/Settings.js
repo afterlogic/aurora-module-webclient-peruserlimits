@@ -8,7 +8,7 @@ var
 module.exports = {
     ServerModuleName: 'PerUserLimits',
 
-    Vip: 0,
+    Vip: 1,
     MaxFileSizeCloud: 0,
     MaxMailAttachmentSize: 0,
     MaxDownloadsCloud: 0,

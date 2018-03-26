@@ -11,10 +11,32 @@ module.exports = function (oAppData) {
 
         Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 
-        bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser
+        bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser,
+
+        bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin
     ;
 
     Settings.init(oAppData);
+
+    if (bAdminUser) {
+        return {
+            start: function (ModulesManager) {
+                ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelTab', [
+                    function (resolve) {
+                        require.ensure(
+                            ['modules/%ModuleName%/js/views/VipAdminSettingsView.js'],
+                            function () {
+                                resolve(require('modules/%ModuleName%/js/views/VipAdminSettingsView.js'));
+                            },
+                            "admin-bundle"
+                        );
+                    },
+                    'vip',
+                    TextUtils.i18n('%MODULENAME%/LABEL_COMMON_VIP_TABNAME')
+                ]);
+            }
+        };
+    }
 
     if (bNormalUser) {
         return {
