@@ -23,7 +23,7 @@ function VipAdminSettingsView()
 
 	/* Editable fields */
 	this.iId = ko.observable(0);
-	this.iVip = ko.observable(0);
+	this.iVip = ko.observable(false);
 	/*-- Editable fields */
 	this.startError = ko.observable('');
 	this.setStartError();
@@ -63,15 +63,15 @@ VipAdminSettingsView.prototype.getStartError = function ()
 
 VipAdminSettingsView.prototype.getCurrentValues = function()
 {
-    var iVip = 0;
-    App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
+    var iVip = false;
+    App.subscribeEvent('ReceiveAjaxResponse::after', _.bind(function (oParams) {
         var oResult = oParams.Response.Result;
         iVip = oResult.Vip;
-    });
+        this.iVip(iVip);
+    }, this));
 
 	return [
-        this.iVip(),
-		this.iId()
+        this.iVip()
 	];
 };
 
