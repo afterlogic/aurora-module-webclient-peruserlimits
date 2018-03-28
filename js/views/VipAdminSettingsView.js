@@ -22,11 +22,19 @@ function VipAdminSettingsView()
 	CAbstractSettingsFormView.call(this, Settings.ServerModuleName);
 
 	/* Editable fields */
-	this.iId = ko.observable(0);
-	this.iVip = ko.observable(false);
+	this.id = ko.observable(0);
+	this.vip = ko.observable(false);
 	/*-- Editable fields */
 	this.startError = ko.observable('');
 	this.setStartError();
+
+    App.subscribeEvent('ReceiveAjaxResponse::after', _.bind(function (oParams) {
+        var oRequest = oParams.Request;
+        if (oRequest.Method === 'GetEntity' && oRequest.Module === 'AdminPanelWebclient' && oRequest.Parameters.Type === 'User') {
+            var oResult = oParams.Response.Result;
+            this.vip(oResult.Vip);
+        }
+    }, this));
 }
 
 _.extendOwn(VipAdminSettingsView.prototype, CAbstractSettingsFormView.prototype);
@@ -35,7 +43,7 @@ VipAdminSettingsView.prototype.ViewTemplate = '%ModuleName%_VipAdminSettingsView
 
 VipAdminSettingsView.prototype.setStartError = function ()
 {
-	this.startError((Settings.iVip === '') ? TextUtils.i18n('%MODULENAME%/ERROR_SAVE') : '');
+	this.startError((Settings.vip === '') ? TextUtils.i18n('%MODULENAME%/ERROR_SAVE') : '');
 };
 
 /**
@@ -51,6 +59,21 @@ VipAdminSettingsView.prototype.save = function ()
     }
 };
 
+CAbstractSettingsFormView.prototype.onResponse = function (oResponse, oRequest)
+{
+    this.isSaving(false);
+
+    if (!oResponse.Result)
+    {
+        Api.showErrorByCode(oResponse, TextUtils.i18n('%MODULENAME%/ERROR_SAVE'));
+    }
+    else
+    {
+        var oParameters = oRequest.Parameters;
+        this.updateSavedState();
+    }
+};
+
 /**
  * Returns error text to show on start if the tab has empty fields.
  *
@@ -63,36 +86,29 @@ VipAdminSettingsView.prototype.getStartError = function ()
 
 VipAdminSettingsView.prototype.getCurrentValues = function()
 {
-    var iVip = false;
-    App.subscribeEvent('ReceiveAjaxResponse::after', _.bind(function (oParams) {
-        var oResult = oParams.Response.Result;
-        iVip = oResult.Vip;
-        this.iVip(iVip);
-    }, this));
-
 	return [
-        this.iVip()
+        this.vip()
 	];
 };
 
 VipAdminSettingsView.prototype.getParametersForSave = function ()
 {
 	return {
-		'iVip': this.iVip(),
-		'iId': this.iId()
+		'vip': this.vip(),
+		'id': this.id()
 	};
 };
 
 VipAdminSettingsView.prototype.setAccessLevel = function (sEntityType, iEntityId)
 {
-    this.iId(iEntityId);
+    this.id(iEntityId);
 	this.visible(sEntityType === 'User');
 };
 
 
 VipAdminSettingsView.prototype.changeState = function ()
 {
-    return !this.iVip();
+    return !this.vip();
 };
 
 module.exports = new VipAdminSettingsView();
