@@ -38,7 +38,7 @@ module.exports = function (oAppData) {
         };
     }
 
-    if (bNormalUser && Settings.Vip === false) {
+    if (bNormalUser && Settings.Vip === 0) {
         return {
             start: function (ModulesManager) {
                 App.subscribeEvent('Jua::Event:before', function (oParams) {
