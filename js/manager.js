@@ -44,7 +44,7 @@ module.exports = function (oAppData) {
                         var oResult = oParams.Arguments[2];
                         if (oParams.Module === 'Files' && oParams.Method === 'UploadFile') {
                             if (!oResult.Result && oResult.ErrorMessage === 'ErrorMaxFilesUploadCloud') {
-                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILES_UPLOAD_CLOUD'));
+                                Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_FILES_UPLOAD_CLOUD'));
                             }
                         }
                     }
