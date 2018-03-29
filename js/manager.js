@@ -26,13 +26,13 @@ module.exports = function (oAppData) {
 
                         if (oParams.Module === 'Files' && oParams.Method === 'UploadFile') {
                             if (iSize > Settings.MaxFileSizeCloud) {
-                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FILE_SIZE_CLOUD', {'SIZE': Settings.MaxFileSizeCloud / (1024 * 1024)}));
+                                Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_FILE_SIZE_CLOUD', {'SIZE': Settings.MaxFileSizeCloud / (1024 * 1024)}));
                                 oParams.Cancel = true;
                             }
                         }
                         else if (oParams.Module === 'Mail' && oParams.Method === 'UploadAttachment') {
                             if (iSize > Settings.MaxMailAttachmentSize) {
-                                Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE', {'SIZE': Settings.MaxMailAttachmentSize / (1024 * 1024)}));
+                                Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_MAIL_ATTACHMENT_SIZE', {'SIZE': Settings.MaxMailAttachmentSize / (1024 * 1024)}));
                                 oParams.Cancel = true;
                             }
                         }
@@ -54,22 +54,22 @@ module.exports = function (oAppData) {
                     if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateContact') {
 
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxContacts') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_CONTACTS'));
+                            Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_CONTACTS'));
                         }
                     }
                     else if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateGroup') {
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxGroups') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_GROUPS'));
+                            Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_GROUPS'));
                         }
                     }
                     else if (oParams.Request.Module === 'Calendar' && oParams.Request.Method === 'CreateCalendar') {
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxCalendars') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_CALENDARS'));
+                            Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_CALENDARS'));
                         }
                     }
                     else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'CreateFolder') {
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxFoldersCloud') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_FOLDERS_CLOUD'));
+                            Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_FOLDERS_CLOUD'));
                         }
                     }
                 });
@@ -80,7 +80,7 @@ module.exports = function (oAppData) {
                     var oLastDate = new Date(Settings.DateTimeDownloadedSize);
 
                     if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
-                        Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_DOWNLOADS_CLOUD'));
+                        Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_DOWNLOADS_CLOUD'));
                         oParams.CancelDownload = true;
                     } else {
                         Settings.DateTimeDownloadedSize = new Date().getTime();
