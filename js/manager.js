@@ -76,10 +76,15 @@ module.exports = function (oAppData) {
 
                 App.subscribeEvent('AbstractFileModel::FileDownload::before', function (oParams) {
                     var oFile = oParams.File;
-                    Settings.MaxDownloadsCloud += oFile.size();
-                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud) {
+                    var oCurrentDate = new Date();
+                    var oLastDate = new Date(Settings.DateTimeDownloadedSize);
+
+                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
                         Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_DOWNLOADS_CLOUD'));
                         oParams.CancelDownload = true;
+                    } else {
+                        Settings.DateTimeDownloadedSize = new Date().getTime();
+                        Settings.DownloadedSize += oFile.size();
                     }
                 });
 
