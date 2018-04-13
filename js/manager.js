@@ -97,6 +97,10 @@ module.exports = function (oAppData) {
                         if (!oParams.Response.Result && oParams.Response.ErrorCode === 4009) {
                             Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_SENDING'));
                         }
+                    } else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'GetFilesForUpload') {
+                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxMailAttachmentSize') {
+                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE', {'SIZE': Settings.MaxMailAttachmentSize / (1024 * 1024)}));
+                        }
                     }
                 });
 
@@ -105,7 +109,10 @@ module.exports = function (oAppData) {
                     var oCurrentDate = new Date();
                     var oLastDate = new Date(Settings.DateTimeDownloadedSize);
 
-                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
+                    if (oFile.size() >= Settings.MaxDownloadsCloud) {
+                        Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_DOWNLOADS_CLOUD'));
+                        oParams.CancelDownload = true;
+                    } else if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
                         Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_DOWNLOADS_CLOUD'));
                         oParams.CancelDownload = true;
                     } else {
