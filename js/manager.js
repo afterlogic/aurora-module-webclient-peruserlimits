@@ -11,12 +11,34 @@ module.exports = function (oAppData) {
 
         Screens = require('%PathToCoreWebclientModule%/js/Screens.js'),
 
-        bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser
+        bNormalUser = App.getUserRole() === Enums.UserRole.NormalUser,
+
+        bAdminUser = App.getUserRole() === Enums.UserRole.SuperAdmin
     ;
 
     Settings.init(oAppData);
 
-    if (bNormalUser) {
+    if (bAdminUser) {
+        return {
+            start: function (ModulesManager) {
+                ModulesManager.run('AdminPanelWebclient', 'registerAdminPanelTab', [
+                    function (resolve) {
+                        require.ensure(
+                            ['modules/%ModuleName%/js/views/VipAdminSettingsView.js'],
+                            function () {
+                                resolve(require('modules/%ModuleName%/js/views/VipAdminSettingsView.js'));
+                            },
+                            "admin-bundle"
+                        );
+                    },
+                    'vip',
+                    TextUtils.i18n('%MODULENAME%/LABEL_COMMON_VIP_TABNAME')
+                ]);
+            }
+        };
+    }
+
+    if (bNormalUser && Settings.Vip === 0) {
         return {
             start: function (ModulesManager) {
                 App.subscribeEvent('Jua::Event:before', function (oParams) {
@@ -52,7 +74,6 @@ module.exports = function (oAppData) {
 
                 App.subscribeEvent('ReceiveAjaxResponse::after', function (oParams) {
                     if (oParams.Request.Module === 'Contacts' && oParams.Request.Method === 'CreateContact') {
-
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxContacts') {
                             Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_CONTACTS'));
                         }
@@ -71,9 +92,10 @@ module.exports = function (oAppData) {
                         if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxFoldersCloud') {
                             Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_FOLDERS_CLOUD'));
                         }
-                    } else if (oParams.Request.Module === 'Files' && oParams.Request.Method === 'GetFilesForUpload') {
-                        if (!oParams.Response.Result && oParams.Response.ErrorMessage === 'ErrorMaxMailAttachmentSize') {
-                            Screens.showError(TextUtils.i18n('PERUSERLIMITSWEBCLIENT/ERROR_MAX_MAIL_ATTACHMENT_SIZE', {'SIZE': Settings.MaxMailAttachmentSize / (1024 * 1024)}));
+                    }
+                    else if (oParams.Request.Module === 'Mail' && oParams.Request.Method === 'SendMessage') {
+                        if (!oParams.Response.Result && oParams.Response.ErrorCode === 4009) {
+                            Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_MAIL_SENDING'));
                         }
                     }
                 });
@@ -83,10 +105,7 @@ module.exports = function (oAppData) {
                     var oCurrentDate = new Date();
                     var oLastDate = new Date(Settings.DateTimeDownloadedSize);
 
-                    if (oFile.size() >= Settings.MaxDownloadsCloud) {
-                        Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_DOWNLOADS_CLOUD'));
-                        oParams.CancelDownload = true;
-                    } else if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
+                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
                         Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_DOWNLOADS_CLOUD'));
                         oParams.CancelDownload = true;
                     } else {
