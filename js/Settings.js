@@ -2,7 +2,8 @@
 
 var
     _ = require('underscore'),
-    Types = require('%PathToCoreWebclientModule%/js/utils/Types.js')
+    Types = require('%PathToCoreWebclientModule%/js/utils/Types.js'),
+    Ajax = require('%PathToCoreWebclientModule%/js/Ajax.js')
 ;
 
 module.exports = {
@@ -35,6 +36,17 @@ module.exports = {
             this.MaxDownloadsCloud = Types.pInt(oAppDataLimitsSection.MaxDownloadsCloud, this.MaxDownloadsCloud);
             this.DownloadedSize = Types.pInt(oAppDataLimitsSection.DownloadedSize, this.DownloadedSize);
             this.DateTimeDownloadedSize = Types.pString(oAppDataLimitsSection.DateTimeDownloadedSize, this.DateTimeDownloadedSize);
+
+            setInterval(
+                Ajax.send(this.ServerModuleName, 'GetSettings', null, function (oResponse) {
+                    this.Vip = Types.pInt(oResponse.Result.Vip, this.Vip);
+                    this.MaxFileSizeCloud = Types.pInt(oResponse.Result.MaxFileSizeCloud, this.MaxFileSizeCloud);
+                    this.MaxMailAttachmentSize = Types.pInt(oResponse.Result.MaxMailAttachmentSize, this.MaxMailAttachmentSize);
+                    this.MaxDownloadsCloud = Types.pInt(oResponse.Result.MaxDownloadsCloud, this.MaxDownloadsCloud);
+                    this.DownloadedSize = Types.pInt(oResponse.Result.DownloadedSize, this.DownloadedSize);
+                    this.DateTimeDownloadedSize = Types.pString(oResponse.Result.DateTimeDownloadedSize, this.DateTimeDownloadedSize);
+                }, this)
+            , 60000);
         }
 
         if (!_.isEmpty(oAppDataLimitsWebclientSection))
