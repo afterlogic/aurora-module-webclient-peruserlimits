@@ -105,7 +105,7 @@ module.exports = function (oAppData) {
                     var oCurrentDate = new Date();
                     var oLastDate = new Date(Settings.DateTimeDownloadedSize);
 
-                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime()) {
+                    if (Settings.DownloadedSize >= Settings.MaxDownloadsCloud && oLastDate.getTime() < oCurrentDate.getTime() || oFile.size() >= Settings.MaxDownloadsCloud) {
                         Screens.showError(TextUtils.i18n('%MODULENAME%/ERROR_MAX_DOWNLOADS_CLOUD'));
                         oParams.CancelDownload = true;
                     } else {
